@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 2 JavaScript - Salman Maula Ash-Shidqi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 30px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+        thead {
+            background-color: #0056b3;
+            color: white;
+            text-transform: uppercase;
+        }
+        tfoot {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        .text-right {
+            text-align: right;
+            padding-right: 20px;
+        }
+        .info-text {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Data Gaji Pegawai</h2>
+        <table id="tabel-gaji">
+            <!-- Judul Kolom -->
+            <thead>
+                <tr>
+                    <th>Nama Pegawai</th>
+                    <th>Umur</th>
+                    <th>Jabatan</th>
+                    <th>Status</th>
+                    <th>Gaji Pokok</th>
+                    <th>Tunj. Jabatan</th>
+                    <th>BPJS</th>
+                    <th>Tunj. Keluarga</th>
+                </tr>
+            </thead>
+            <!-- Isi Data -->
+            <tbody id="data-pegawai">
+                <!-- Data akan dirender menggunakan JavaScript -->
+            </tbody>
+            <!-- Total Gaji -->
+            <tfoot>
+                <tr>
+                    <th colspan="7" class="text-right">Total Gaji (Take Home Pay):</th>
+                    <th id="total-gaji"></th>
+                </tr>
+            </tfoot>
+        </table>
+        <p class="info-text">*Catatan: Total Gaji dihitung dari (Gaji Pokok + Tunjangan Jabatan + Tunjangan Keluarga) dikurangi potongan BPJS.</p>
+    </div>
+
+    <script>
+        // 1. Deklarasi Data Pegawai
+        const pegawai = "Dodi Prayodi";
+        const umur = 25;
+        const jabatan = "Manajer";
+        const status = "Menikah";
+
+        // 2. Logika Gaji Pokok (Menggunakan IF Statement)
+        let gapok = 0;
+        let jabatanLower = jabatan.toLowerCase();
+
+        if (jabatanLower === "manajer") {
+            gapok = 15000000;
+        } else if (jabatanLower === "asisten manajer") {
+            gapok = 10000000;
+        } else if (jabatanLower === "staff") {
+            gapok = 5000000;
+        }
+
+        // 3. Logika Tunjangan Jabatan (15% dari gapok)
+        const tunjJabatan = 0.15 * gapok;
+
+        // 4. Logika BPJS (10% dari gapok) - Sebagai Potongan
+        const bpjs = 0.10 * gapok;
+
+        // 5. Logika Tunjangan Keluarga (Menggunakan Ternary Operator)
+        // Jika status menikah, 20% dari gapok. Jika tidak, 0.
+        const tunjKeluarga = (status.toLowerCase() === "menikah") ? (0.20 * gapok) : 0;
+
+        // 6. Total Gaji (Gaji Pokok + Tunjangan - BPJS)
+        const totalGaji = (gapok + tunjJabatan + tunjKeluarga) - bpjs;
+
+        // Fungsi bantuan untuk memformat angka menjadi format Rupiah
+        const formatRupiah = (angka) => {
+            return new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0
+            }).format(angka);
+        };
+
+        // 7. Render Data ke dalam HTML (DOM Manipulation)
+        document.getElementById("data-pegawai").innerHTML = `
+            <tr>
+                <td>${pegawai}</td>
+                <td>${umur} Tahun</td>
+                <td>${jabatan}</td>
+                <td>${status}</td>
+                <td>${formatRupiah(gapok)}</td>
+                <td>${formatRupiah(tunjJabatan)}</td>
+                <td>-${formatRupiah(bpjs)}</td>
+                <td>${formatRupiah(tunjKeluarga)}</td>
+            </tr>
+        `;
+
+        // Menampilkan Total Gaji di tfoot
+        document.getElementById("total-gaji").innerHTML = formatRupiah(totalGaji);
+    </script>
+
+</body>
+</html>
