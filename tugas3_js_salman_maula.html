@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 3 JavaScript - Salman Maula Ash-Shidqi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 30px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .form-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 6px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 150px;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        button.btn-danger {
+            background-color: #dc3545;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        button.btn-danger:hover {
+            background-color: #c82333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+        thead {
+            background-color: #0056b3;
+            color: white;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .empty-state {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Sistem Manajemen Pesanan - Daftar Produk</h2>
+        
+        <!-- Form Tambah Produk -->
+        <div class="form-container">
+            <div class="form-group">
+                <label for="inputNama">Nama Produk</label>
+                <input type="text" id="inputNama" placeholder="Contoh: Monitor">
+            </div>
+            <div class="form-group">
+                <label for="inputHarga">Harga (Rp)</label>
+                <input type="number" id="inputHarga" placeholder="Contoh: 1500000">
+            </div>
+            <div class="form-group">
+                <label for="inputStok">Stok</label>
+                <input type="number" id="inputStok" placeholder="Contoh: 15">
+            </div>
+            <button onclick="handlerTambahProduk()">Tambah Produk</button>
+        </div>
+
+        <!-- Tabel Produk -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Produk</th>
+                    <th>Harga</th>
+                    <th>Stok</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-produk">
+                <!-- Data produk akan dirender di sini oleh JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        /* 
+         * 1. Inisialisasi Array produkToko
+         * Menyimpan daftar produk awal sesuai instruksi tugas
+         */
+        let produkToko = [
+            {id: 1, nama: "Laptop", harga: 7000000, stok: 5},
+            {id: 2, nama: "Mouse", harga: 200000, stok: 10},
+            {id: 3, nama: "Keyboard", harga: 350000, stok: 7}
+        ];
+
+        /* 
+         * 2. Fungsi tampilkanProduk()
+         * Menampilkan daftar produk ke dalam tabel HTML dan Console
+         */
+        const tampilkanProduk = () => {
+            const tbody = document.getElementById("tabel-produk");
+            tbody.innerHTML = ""; // Kosongkan isi tabel sebelum dirender ulang
+
+            // Cek jika array kosong
+            if (produkToko.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Data produk kosong.</td></tr>`;
+            } else {
+                // Looping array produkToko untuk membuat baris tabel
+                produkToko.forEach(produk => {
+                    // Format harga ke Rupiah
+                    const hargaRupiah = new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0
+                    }).format(produk.harga);
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${produk.id}</td>
+                            <td>${produk.nama}</td>
+                            <td>${hargaRupiah}</td>
+                            <td>${produk.stok}</td>
+                            <td>
+                                <button class="btn-danger" onclick="hapusProduk(${produk.id})">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Tampilkan juga wujud datanya di Console browser
+            console.log("Daftar Produk Saat Ini:", produkToko);
+        };
+
+        /* 
+         * 3. Fungsi tambahProduk(nama, harga, stok)
+         * Menambahkan objek produk baru ke dalam array produkToko
+         */
+        const tambahProduk = (nama, harga, stok) => {
+            // Logika untuk membuat ID baru (Auto-increment berdasarkan ID tertinggi)
+            let newId = 1;
+            if (produkToko.length > 0) {
+                // Mengambil nilai id terbesar lalu ditambah 1
+                newId = Math.max(...produkToko.map(p => p.id)) + 1;
+            }
+
+            // Masukkan data baru ke array menggunakan metode push()
+            produkToko.push({
+                id: newId,
+                nama: nama,
+                harga: parseInt(harga), // Pastikan menjadi tipe data angka
+                stok: parseInt(stok)
+            });
+
+            // Perbarui tampilan UI
+            tampilkanProduk();
+        };
+
+        /* 
+         * 4. Fungsi hapusProduk(id)
+         * Menghapus produk dari array berdasarkan ID menggunakan metode filter()
+         */
+        const hapusProduk = (id) => {
+            // Konfirmasi keamanan sebelum menghapus
+            const konfirmasi = confirm(`Apakah Anda yakin ingin menghapus produk dengan ID ${id}?`);
+            if (konfirmasi) {
+                // Filter array: simpan semua data yang id-nya TIDAK SAMA dengan id yang dihapus
+                produkToko = produkToko.filter(produk => produk.id !== id);
+                
+                // Perbarui tampilan UI
+                tampilkanProduk();
+            }
+        };
+
+        // --- Fungsi Handler Tambahan untuk Interaksi Form HTML ---
+        const handlerTambahProduk = () => {
+            const nama = document.getElementById("inputNama").value;
+            const harga = document.getElementById("inputHarga").value;
+            const stok = document.getElementById("inputStok").value;
+
+            // Validasi input tidak boleh kosong
+            if (nama === "" || harga === "" || stok === "") {
+                alert("Mohon lengkapi semua kolom data produk!");
+                return;
+            }
+
+            // Panggil fungsi tambahProduk yang diinstruksikan
+            tambahProduk(nama, harga, stok);
+
+            // Kosongkan form input setelah ditambahkan
+            document.getElementById("inputNama").value = "";
+            document.getElementById("inputHarga").value = "";
+            document.getElementById("inputStok").value = "";
+        };
+
+        // Render data pertama kali saat halaman dimuat
+        tampilkanProduk();
+    </script>
+
+</body>
+</html>
