@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 4 OOP JS - Salman Maula Ash-Shidqi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 30px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .form-container {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 200px;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        thead {
+            background-color: #343a40;
+            color: white;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .badge {
+            background-color: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-motor { background-color: #17a2b8; }
+        .empty-state {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Sistem Manajemen Transportasi (OOP)</h2>
+        
+        <div class="form-container">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nama Pelanggan</label>
+                    <input type="text" id="inputNama" placeholder="Masukkan nama...">
+                </div>
+                <div class="form-group">
+                    <label>Nomor Telepon</label>
+                    <input type="text" id="inputTelepon" placeholder="Masukkan nomor...">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Jenis Kendaraan</label>
+                    <select id="inputJenis">
+                        <option value="Mobil">Mobil</option>
+                        <option value="Motor">Motor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Merek Kendaraan</label>
+                    <input type="text" id="inputMerek" placeholder="Contoh: Toyota Avanza / Honda Vario">
+                </div>
+            </div>
+            <button onclick="prosesPenyewaan()">Catat Penyewaan</button>
+        </div>
+
+        <h3>Daftar Pelanggan Aktif</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Pelanggan</th>
+                    <th>No. Telepon</th>
+                    <th>Kendaraan Disewa</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-pelanggan">
+                <tr><td colspan="4" class="empty-state">Belum ada data penyewaan.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        /* ==========================================
+           1. PENERAPAN OOP: CLASS DAN INHERITANCE
+           ========================================== */
+        
+        // Parent Class (Superclass)
+        class Kendaraan {
+            constructor(merek, jenis) {
+                this.merek = merek;
+                this.jenis = jenis;
+            }
+            
+            // Metode yang akan di-override (Polymorphism)
+            getDetail() {
+                return `${this.merek}`;
+            }
+        }
+
+        // Child Class 1
+        class Mobil extends Kendaraan {
+            constructor(merek) {
+                super(merek, "Mobil");
+            }
+            // Override metode
+            getDetail() {
+                return `<span class="badge">🚗 Mobil</span> ${this.merek}`;
+            }
+        }
+
+        // Child Class 2
+        class Motor extends Kendaraan {
+            constructor(merek) {
+                super(merek, "Motor");
+            }
+            // Override metode
+            getDetail() {
+                return `<span class="badge badge-motor">🏍️ Motor</span> ${this.merek}`;
+            }
+        }
+
+        /* ==========================================
+           2. CLASS PELANGGAN (Sesuai Instruksi)
+           ========================================== */
+        class Pelanggan {
+            constructor(nama, nomorTelepon) {
+                this.nama = nama;
+                this.nomorTelepon = nomorTelepon;
+                this.kendaraanDisewa = null; // Awalnya belum menyewa
+            }
+
+            // Metode untuk mencatat transaksi
+            catatPenyewaan(objekKendaraan) {
+                this.kendaraanDisewa = objekKendaraan;
+                console.log(`Transaksi Berhasil: ${this.nama} menyewa ${this.kendaraanDisewa.merek}`);
+            }
+        }
+
+        /* ==========================================
+           3. SISTEM MANAJEMEN (Logika & UI)
+           ========================================== */
+        
+        // Array untuk menyimpan objek pelanggan
+        const daftarPelanggan = [];
+
+        // Fungsi Handler dari Tombol
+        const prosesPenyewaan = () => {
+            const nama = document.getElementById("inputNama").value;
+            const telepon = document.getElementById("inputTelepon").value;
+            const jenis = document.getElementById("inputJenis").value;
+            const merek = document.getElementById("inputMerek").value;
+
+            // Validasi Input
+            if(!nama || !telepon || !merek) {
+                alert("Mohon lengkapi semua data form!");
+                return;
+            }
+
+            // Instansiasi Objek Pelanggan
+            const pelangganBaru = new Pelanggan(nama, telepon);
+
+            // Instansiasi Objek Kendaraan berdasarkan pilihan
+            let kendaraanBaru;
+            if (jenis === "Mobil") {
+                kendaraanBaru = new Mobil(merek);
+            } else {
+                kendaraanBaru = new Motor(merek);
+            }
+
+            // Eksekusi metode pencatatan
+            pelangganBaru.catatPenyewaan(kendaraanBaru);
+
+            // Simpan ke database array
+            daftarPelanggan.push(pelangganBaru);
+
+            // Update UI
+            tampilkanDaftarPelanggan();
+
+            // Reset Form
+            document.getElementById("inputNama").value = "";
+            document.getElementById("inputTelepon").value = "";
+            document.getElementById("inputMerek").value = "";
+        };
+
+        // Fungsi Render ke HTML Table
+        const tampilkanDaftarPelanggan = () => {
+            const tbody = document.getElementById("tabel-pelanggan");
+            tbody.innerHTML = ""; 
+
+            daftarPelanggan.forEach(pelanggan => {
+                // Memanggil getDetail() menunjukkan sifat Polymorphism dari objek kendaraan
+                const detailKendaraan = pelanggan.kendaraanDisewa.getDetail();
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${pelanggan.nama}</strong></td>
+                        <td>${pelanggan.nomorTelepon}</td>
+                        <td>${detailKendaraan}</td>
+                        <td><span style="color: green; font-weight: bold;">Sedang Disewa</span></td>
+                    </tr>
+                `;
+            });
+        };
+    </script>
+
+</body>
+</html>
