@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 5 JS - Salman Maula Ash-Shidqi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 30px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #004494; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-danger:hover { background-color: #c82333; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        thead {
+            background-color: #343a40;
+            color: white;
+        }
+        tbody tr:nth-child(even) { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Sistem Manajemen Produk Toko Online</h2>
+        
+        <div class="btn-group">
+            <button id="btnTambah">Tambah Kamera (Demo Event Listener)</button>
+            <button id="btnHapus" class="btn-danger">Hapus ID 4 & 5 (Demo Rest Parameter)</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Produk</th>
+                    <th>Harga</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-produk">
+                <!-- Data dirender melalui JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // **Data Produk (Minimal 5 Data)**
+        let produkList = [
+            { id: 1, nama: "Laptop", harga: 12000000 },
+            { id: 2, nama: "Smartphone", harga: 5000000 },
+            { id: 4, nama: "Smartwatch", harga: 2500000 },
+            { id: 5, nama: "Headphone", harga: 1500000 },
+            { id: 6, nama: "Keyboard Mechanical", harga: 800000 }
+        ];
+
+        // **Object Event Handler**
+        const eventHandler = {
+            tambahKamera: function() {
+                tambahProduk(7, "Kamera Mirrorless", 8500000);
+                tampilkanProduk();
+            },
+            hapusBanyak: function() {
+                // Menghapus banyak produk sekaligus untuk mendemonstrasikan Rest Parameter
+                hapusProduk(4, 5); 
+                tampilkanProduk();
+            }
+        };
+
+        // **Menambahkan Event Listener pada Tombol UI**
+        document.getElementById("btnTambah").addEventListener("click", eventHandler.tambahKamera);
+        document.getElementById("btnHapus").addEventListener("click", eventHandler.hapusBanyak);
+
+
+        // **Menambahkan Produk dengan Spread Operator**
+        function tambahProduk(id, nama, harga) {
+            const produkBaru = { id, nama, harga };
+            // Menggabungkan array lama dengan objek baru menggunakan Spread Operator (...)
+            produkList = [...produkList, produkBaru];
+            console.log(`[INFO] Produk ${nama} berhasil ditambahkan.`);
+        }
+
+        // **Menghapus Produk dengan Rest Parameter**
+        // Modifikasi parameter menjadi (...ids) agar bisa menerima lebih dari satu ID sekaligus
+        function hapusProduk(...ids) {
+            // Filter array: simpan produk yang ID-nya TIDAK ADA di dalam kumpulan parameter ids
+            produkList = produkList.filter(produk => !ids.includes(produk.id));
+            console.log(`[INFO] Produk dengan ID ${ids.join(', ')} berhasil dihapus.`);
+        }
+
+        // **Menampilkan Produk dengan Destructuring**
+        function tampilkanProduk() {
+            const tbody = document.getElementById("tabel-produk");
+            tbody.innerHTML = ""; // Bersihkan tabel
+
+            console.log("=== DAFTAR PRODUK SAAT INI ===");
+            
+            produkList.forEach(produk => {
+                // Destructuring Object
+                const { id, nama, harga } = produk; 
+
+                // Format harga ke Rupiah
+                const hargaRupiah = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0
+                }).format(harga);
+
+                // Tampilkan di Console
+                console.log(`ID: ${id} | Nama: ${nama} | Harga: ${hargaRupiah}`);
+
+                // Render ke HTML
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${id}</td>
+                        <td>${nama}</td>
+                        <td>${hargaRupiah}</td>
+                    </tr>
+                `;
+            });
+            console.log("==============================");
+        }
+
+        /* =========================================================
+           EKSEKUSI KODE SESUAI CONTOH TEMPLATE DARI INSTRUKTUR
+           ========================================================= */
+        console.log("--- EKSEKUSI OTOMATIS SAAT HALAMAN DIMUAT ---");
+        
+        tampilkanProduk();
+        
+        // Contoh penambahan data
+        tambahProduk(3, "Tablet", 7000000);
+        tampilkanProduk();
+        
+        hapusProduk(2);
+        tampilkanProduk();
+
+    </script>
+</body>
+</html>
